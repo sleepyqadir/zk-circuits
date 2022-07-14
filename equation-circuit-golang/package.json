@@ -1,0 +1,24 @@
+{
+  "name": "equation-circuit-golang",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "circom mult.circom --r1cs --wasm --sym --c",
+    "details": "snarkjs r1cs export json mult.r1cs mult.json",
+    "witness": "node ./mult_js/generate_witness.js ./mult_js/mult.wasm input.json witness.wtns",
+    "witness:export": "snarkjs wtns export json witness.wtns witness.json",
+    "ptau:phase1": "snarkjs powersoftau new bn128 12 pot12_0000.ptau -v",
+    "ptau:phase2": "snarkjs powersoftau contribute pot12_0000.ptau pot12_0001.ptau --name='My name' -v",
+    "ptau:prepare": "snarkjs powersoftau prepare phase2 pot12_0001.ptau pot12_final.ptau -v",
+    "setup": "snarkjs groth16 setup mult.r1cs pot12_final.ptau mult_0000.zkey",
+    "zkey": "snarkjs zkey contribute mult_0000.zkey mult_0001.zkey --name='Test Name' -v",
+    "verification": "snarkjs zkey export verificationkey mult_0001.zkey verification_key.json",
+    "proof:generate": "snarkjs groth16 prove mult_0001.zkey witness.wtns proof.json public.json",
+    "proof:verify": "snarkjs groth16 verify verification_key.json public.json proof.json",
+    "zkey:verify": "snarkjs zkey verify mult.r1cs pot12_final.ptau mult_0000.zkey"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
